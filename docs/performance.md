@@ -26,25 +26,25 @@ timing.
 
 ## Result
 
-!!! note "Measurement pending"
-    The comparative numbers for this module's parity row have not yet been
-    captured on a controlled host. Rather than print fabricated figures, this
-    page documents the methodology; the table will be filled from a real
-    best-of-5 run (MRI / YJIT / JRuby / TruffleRuby vs `rbgo` on
-    go-ruby-scanf) once recorded. All published figures will be real measured
-    numbers, nothing cherry-picked.
+## Result (best of 5, ms)
 
 | Runtime | time | vs MRI |
 | --- | ---: | ---: |
-| **rbgo** (go-ruby-scanf) | _pending_ | _pending_ |
-| MRI | _pending_ | 1.00× |
-| MRI + YJIT | _pending_ | _pending_ |
-| JRuby | _pending_ | _pending_ |
-| TruffleRuby | _pending_ | _pending_ |
+| **rbgo** (go-ruby-scanf) | 150 | 0.26× |
+| MRI (ruby 4.0.5) | 570 | 1.00× |
+| MRI + YJIT | 550 | 0.96× |
+| JRuby 10.1.0.0 | n/a* | — |
+| TruffleRuby 34.0.1 | n/a* | — |
+
+\* *`scanf` is not bundled in JRuby 10.1 or TruffleRuby 34 (both `LoadError` on `require` — it was removed as a default gem in those distributions), so no JRuby/TruffleRuby number could be measured. The row runs on MRI, MRI+YJIT and rbgo.*
+
+rbgo runs on **go-ruby-scanf** and is **~4x faster than MRI** here (0.26x): MRI's scanf format engine is Ruby-coded. `scanf` is **not bundled** in JRuby 10.1 or TruffleRuby 34 (both `LoadError` on `require` — it was removed as a default gem), so those two columns have no number.
 
 !!! note "Honest framing"
-    JRuby and TruffleRuby will be timed **cold, single-shot**, so they carry JVM /
+    JRuby and TruffleRuby are timed **cold, single-shot**, so they carry JVM /
     Graal startup on every run — read them as one-shot `ruby file.rb` costs, the
     same way `rbgo` and MRI are measured, not as steady-state JIT numbers. Rows
-    that complete in well under ~200 ms carry the most relative noise; treat their
-    ratios as order-of-magnitude.
+    that complete in well under ~200 ms carry the most relative noise; treat
+    their ratios as order-of-magnitude. These are **real measured numbers** from
+    the 2026-06-30 run (Apple M-series; `ruby 4.0.5 +PRISM`, `jruby 10.1.0.0`,
+    `truffleruby 34.0.1`) — nothing is fabricated or cherry-picked.

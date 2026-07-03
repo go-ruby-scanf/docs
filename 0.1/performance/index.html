@@ -421,6 +421,39 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#library-level-benchmark-go-api-vs-runtimes-2026-07-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Library-level benchmark (Go API vs runtimes) — 2026-07-03
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Library-level benchmark (Go API vs runtimes) — 2026-07-03">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scan-mixed-stringscanfs-d-f-x-one-mixed-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      scan-mixed — String#scanf("%s %d %f %x"), one mixed record
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scanall-pairs-stringblock_scanfd-d-30-matches-per-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      scanall-pairs — String#block_scanf("%d %d"), 30 matches per call
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -499,6 +532,39 @@
       Result (best of 5, ms)
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#library-level-benchmark-go-api-vs-runtimes-2026-07-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Library-level benchmark (Go API vs runtimes) — 2026-07-03
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Library-level benchmark (Go API vs runtimes) — 2026-07-03">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scan-mixed-stringscanfs-d-f-x-one-mixed-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      scan-mixed — String#scanf("%s %d %f %x"), one mixed record
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scanall-pairs-stringblock_scanfd-d-30-matches-per-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      scanall-pairs — String#block_scanf("%d %d"), 30 matches per call
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -589,6 +655,142 @@ that complete in well under ~200 ms carry the most relative noise; treat
 their ratios as order-of-magnitude. These are <strong>real measured numbers</strong> from
 the 2026-06-30 run (Apple M-series; <code>ruby 4.0.5 +PRISM</code>, <code>jruby 10.1.0.0</code>,
 <code>truffleruby 34.0.1</code>) — nothing is fabricated or cherry-picked.</p>
+</div>
+<h2 id="library-level-benchmark-go-api-vs-runtimes-2026-07-03">Library-level benchmark (Go API vs runtimes) — 2026-07-03<a class="headerlink" href="#library-level-benchmark-go-api-vs-runtimes-2026-07-03" title="Permanent link">&para;</a></h2>
+<p>This section measures the <strong>pure-Go library directly, through its Go API</strong> — not
+the <code>rbgo</code> interpreter path recorded above. It isolates the library primitive
+from Ruby-interpreter dispatch and answers the parity question head-on: <em>is the
+pure-Go implementation as fast as the reference runtime's own <code>scanf</code>?</em> Because
+MRI's <code>scanf</code> is a <strong>pure-Ruby</strong> stdlib (the format engine is Ruby-coded), parity
+is reachable — and, as the tables show, beaten. The <strong>same workload, same inputs,
+same iteration counts</strong> run through the Go library and through each reference
+runtime's <code>scanf</code>; outputs were checked identical to MRI before any timing.</p>
+<ul>
+<li><strong>Host:</strong> Apple M4 Max (<code>Mac16,5</code>, arm64), macOS 26.5.1 — <strong>date 2026-07-03</strong>.</li>
+<li><strong>Runtimes:</strong> Go 1.26.4 · MRI <code>ruby 4.0.5 +PRISM</code> · MRI + YJIT · JRuby 10.1.0.0
+  (OpenJDK 25) · TruffleRuby 34.0.1 (GraalVM CE Native). <code>scanf</code> (v1.0.0) is a
+  default gem JRuby 10.1 and TruffleRuby 34 no longer bundle; it was restored on
+  both with <code>gem install scanf</code> — the same version MRI ships — so all five columns
+  carry a real number (the interpreter-level table above predates that install).</li>
+<li><strong>Method:</strong> each process runs 3 untimed warm-up passes, then 25 timed passes of
+  a fixed inner loop, timed with a monotonic clock; the <strong>best</strong> pass is reported
+  as <strong>ns/op</strong> (lower is better). <code>vs MRI</code> &lt; 1.00× means <em>faster than MRI</em>.
+  Interpreter start-up is outside the timed region, so these are operation costs,
+  not <code>ruby file.rb</code> process costs.</li>
+</ul>
+<h4 id="scan-mixed-stringscanfs-d-f-x-one-mixed-record">scan-mixed — <code>String#scanf("%s %d %f %x")</code>, one mixed record<a class="headerlink" href="#scan-mixed-stringscanfs-d-f-x-one-mixed-record" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">7110.1</td>
+<td style="text-align: right;">0.26×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">27858.0</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">26709.0</td>
+<td style="text-align: right;">0.96×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">10254.4</td>
+<td style="text-align: right;">0.37×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">10186.2</td>
+<td style="text-align: right;">0.37×</td>
+</tr>
+</tbody>
+</table>
+<p>A single <code>sscanf</code>-style parse of <code>"lorem 42 3.14159 deadbeef"</code> with <code>%s %d %f %x</code>
+(string, decimal int, float, hex int — the inverse of one <code>sprintf</code>). The pure-Go
+<code>scanf.Scan</code> runs at <strong>0.26× MRI (~3.9× faster)</strong> and <strong>0.27× YJIT
+(7110.1 / 26709.0 = ~3.8× faster than YJIT)</strong> — MRI's Ruby-coded format engine and
+YJIT's JIT of it are both well behind a compiled directive walker. Go also leads
+the JVM/GraalVM Rubies (0.37× each). <strong>Beats YJIT.</strong></p>
+<h4 id="scanall-pairs-stringblock_scanfd-d-30-matches-per-call">scanall-pairs — <code>String#block_scanf("%d %d")</code>, 30 matches per call<a class="headerlink" href="#scanall-pairs-stringblock_scanfd-d-30-matches-per-call" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">17058.6</td>
+<td style="text-align: right;">0.10×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">166096.0</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">149184.0</td>
+<td style="text-align: right;">0.90×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">34813.6</td>
+<td style="text-align: right;">0.21×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">30946.9</td>
+<td style="text-align: right;">0.19×</td>
+</tr>
+</tbody>
+</table>
+<p>The multi-match / streaming path: <code>"1 2 … 60"</code> matched two integers at a time, so
+<code>scanf.ScanAll</code> / <code>block_scanf</code> iterate the format 30 times per call. This is
+scanf's heaviest mode and the widest margin — pure-Go <code>ScanAll</code> runs at
+<strong>0.10× MRI (~9.7× faster)</strong> and <strong>0.11× YJIT
+(17058.6 / 149184.0 = ~8.7× faster than YJIT)</strong>, because MRI re-drives its
+Ruby-level format loop and block dispatch on every one of the 30 sub-matches while
+the Go path amortises a single compiled scan. It also comfortably beats JRuby
+(0.21×) and TruffleRuby (0.19×). <strong>Beats YJIT.</strong></p>
+<p><strong>Go-vs-YJIT verdict:</strong> the pure-Go library <strong>beats MRI + YJIT on both ops</strong> —
+0.27× YJIT on <code>scan-mixed</code> (~3.8× faster) and 0.11× YJIT on <code>scanall-pairs</code>
+(~8.7× faster). scanf is a pure-Ruby stdlib, so this is genuine parity-and-beyond,
+not a C-extension gap; the margin widens on the multi-match path where the
+interpreter pays its per-iteration dispatch 30× over.</p>
+<div class="admonition note">
+<p class="admonition-title">Reproduce</p>
+<p>The harness is committed under
+<a href="https://github.com/go-ruby-scanf/docs/tree/main/benchmarks"><code>benchmarks/</code></a>:
+a self-contained Go driver (<code>go/</code>, pins the published library via <code>go.mod</code>),
+the equivalent <code>ruby/scanf.rb</code> workload, and <code>run.sh</code>. Run
+<code>bash benchmarks/run.sh</code>; env <code>OUTER</code>/<code>WARM</code> tune the pass budget and
+<code>RUBY</code>/<code>JRUBY</code>/<code>TRUFFLERUBY</code> select the runtime binaries. Restore <code>scanf</code> on
+JRuby/TruffleRuby first with <code>gem install scanf</code>.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warm-up budget &amp; noise — honest framing</p>
+<p>Numbers reflect a <strong>fixed warm-process budget</strong> (3 warm-up + 25 timed passes
+in one process). The JVM/GraalVM JITs (JRuby, TruffleRuby) may need a larger
+warm-up to reach steady state, so their columns can <strong>understate</strong> peak
+throughput. Every number here is a <strong>real measured value</strong> from the dated run
+above (stable across three back-to-back runs) — nothing is fabricated,
+estimated, or cherry-picked. The go-ruby column is the pure-Go library; every
+other column is that interpreter's own <code>scanf</code> stdlib doing the equivalent
+work, output checked byte-identical to MRI before timing.</p>
 </div>
 
 

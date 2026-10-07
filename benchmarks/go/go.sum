@@ -4,3 +4,5 @@ github.com/go-ruby-scanf/scanf v0.0.0-20260717073842-238d8003a8eb h1:D7UOhzi1k+f
 github.com/go-ruby-scanf/scanf v0.0.0-20260717073842-238d8003a8eb/go.mod h1:UpBHz/Hf4Q8h14UpfJ5Cpp+OxVEqqNuICXGnUjg2dKc=
 github.com/go-ruby-scanf/scanf v0.0.0-20260916102437-76341a9284aa h1:HDPt4wjtK+VCeuoK1aWUODR78StZLilYB9CVTdiKMzA=
 github.com/go-ruby-scanf/scanf v0.0.0-20260916102437-76341a9284aa/go.mod h1:UpBHz/Hf4Q8h14UpfJ5Cpp+OxVEqqNuICXGnUjg2dKc=
+github.com/go-ruby-scanf/scanf v0.0.0-20261007113224-1c621764d78c h1:ItWO9CwvpvtFYdEsWxSBLwnlEWhB8gRA2C5/OHhlnMw=
+github.com/go-ruby-scanf/scanf v0.0.0-20261007113224-1c621764d78c/go.mod h1:E7Y69XtRkxzU/s/d7NCkBf/qFT/jdlfhfah4teNSVEY=
